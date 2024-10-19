@@ -10,7 +10,8 @@ class BrowserManager:
         self.profile_path = profile_path
     
     def create_firefox_profile(self):
-        """Создает Firefox профиль с заданными настройками"""
+        
+        # Задает профилю настройки
         options = Options()
         options.profile = self.profile_path
 
@@ -23,5 +24,5 @@ class BrowserManager:
 
         # Создаем драйвер с настроенным профилем
         driver = webdriver.Firefox(service=FirefoxService(), options=options)
-        time.sleep(4)
+        time.sleep(2)
         return driver

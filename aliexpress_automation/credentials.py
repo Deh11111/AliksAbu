@@ -13,13 +13,14 @@ class AccountManager:
             for idx, line in enumerate(lines, start=1):
                 # Разбиваем строку на email, pass, reserve_email
                 email, password, reserve_email = line.split(':')
+
                 # Сохраняем данные в словарь с индексом начиная с 1
                 credentials_dict[idx] = {
                     'email': email,
                     'password': password,
                     'reserve_email': reserve_email
                 }
-                
+
         return credentials_dict
 
     def get_credentials(self, index):
@@ -28,5 +29,7 @@ class AccountManager:
 
 # Пример использования:
 manager = AccountManager()
-print(manager.get_credentials(1))  # Теперь выводит данные для первого аккаунта
-print(manager.get_credentials(2))  # Данные для второго аккаунта
+email_data = manager.get_credentials(1)
+
+
+print(email_data)  # Теперь выводит данные для первого аккаунта
