@@ -1,22 +1,24 @@
 {
     "manifest_version": 3,
-    "name": "Open Liepajniekiem.lv & Google Login",
-    "version": "1.1",
-    "description": "Opens the Liepajniekiem.lv website and clicks the Google login button on Aliexpress.",
-    "action": {
-      "default_popup": "popup.html"
-    },
+    "name": "AliExpress Auto Login",
+    "version": "1.0",
     "permissions": [
-      "tabs",
+      "scripting",
       "activeTab",
-      "scripting"
+      "tabs"
     ],
+    "action": {
+      "default_popup": "popup.html",
+      "default_title": "AliExpress Login"
+    },
     "background": {
       "service_worker": "background.js"
     },
-    "host_permissions": [
-      "https://*/*",
-      "http://*/*"
+    "content_scripts": [
+      {
+        "matches": ["https://*.aliexpress.com/*", "https://accounts.google.com/*"],
+        "js": ["content.js"]
+      }
     ]
   }
   

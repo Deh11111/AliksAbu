@@ -1,21 +1,17 @@
 document.getElementById('open-url').addEventListener('click', function() {
-    chrome.tabs.create({ url: 'https://www.aliexpress.com/account/setting/index.html' });
+    chrome.tabs.create({ url: 'https://login.aliexpress.com/?returnUrl=https%3A%2F%2Fwww.aliexpress.com%2Faccount%2Fsetting%2Findex.html%3Fspm%3Da2g0o.home.headerAcount.7.67db76dba1hp53' });
 });
 
 document.getElementById('login-google').addEventListener('click', function() {
     chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
-        chrome.scripting.executeScript({
-            target: { tabId: tabs[0].id },
-            function: clickGoogleLogin
-        });
+        // Отправляем сообщение на выполнение симуляции логина через Google
+        chrome.tabs.sendMessage(tabs[0].id, { action: 'login-google' });
     });
 });
 
-function clickGoogleLogin() {
-    const googleLoginButton = document.querySelector('a.fm-sns-new-item.google');
-    if (googleLoginButton) {
-        googleLoginButton.click();
-    } else {
-        console.log('Google login button not found.');
-    }
-}
+document.getElementById('login').addEventListener('click', function() {
+    chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+        // Отправляем сообщение на выполнение симуляции логина через Google
+        chrome.tabs.sendMessage(tabs[0].id, { action: 'login' });
+    });
+});
