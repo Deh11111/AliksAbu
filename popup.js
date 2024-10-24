@@ -1,17 +1,14 @@
-document.getElementById('open-url').addEventListener('click', function() {
-    chrome.tabs.create({ url: 'https://login.aliexpress.com/?returnUrl=https%3A%2F%2Fwww.aliexpress.com%2Faccount%2Fsetting%2Findex.html%3Fspm%3Da2g0o.home.headerAcount.7.67db76dba1hp53' });
-});
-
-document.getElementById('login-google').addEventListener('click', function() {
+document.getElementById('start').addEventListener('click', function() {
     chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
-        // Отправляем сообщение на выполнение симуляции логина через Google
-        chrome.tabs.sendMessage(tabs[0].id, { action: 'login-google' });
+        // Выполняем скрипт на активной вкладке
+        chrome.scripting.executeScript({
+            target: { tabId: tabs[0].id },
+            function: openAndNavigateToAliExpress
+        });
     });
 });
 
-document.getElementById('login').addEventListener('click', function() {
-    chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
-        // Отправляем сообщение на выполнение симуляции логина через Google
-        chrome.tabs.sendMessage(tabs[0].id, { action: 'login' });
-    });
-});
+function openAndNavigateToAliExpress() {
+    const url = 'https://www.aliexpress.com/p/address-manage/index.html';
+    window.location.href = url;
+}

@@ -1,69 +1,74 @@
-// Функция ожидания элемента на странице
-async function waitForElement(selector, timeout = 10000) {
-    const start = Date.now();
-    while (Date.now() - start < timeout) {
-        const element = document.querySelector(selector);
-        if (element) return element;
-        await new Promise(resolve => setTimeout(resolve, 100)); // Ждем 100мс перед повторной проверкой
-    }
-    throw new Error(`Element ${selector} не найден за ${timeout / 1000} секунд`);
-}
+// Функция для плавного ввода значения в поле
+function smoothInput(element, value, delay) {
+    let index = 0; // Индекс текущей буквы
 
-// Функция для симуляции входа через Google
-async function simulateMouseClickAndLogin() {
-    try {
-        // Находим кнопку для входа через Google на AliExpress
-        const googleLoginButton = await waitForElement('a.fm-sns-new-item.google');
-        googleLoginButton.click(); // Симулируем клик
+    // Функция для ввода одной буквы
+    function typeNextLetter() {
+        if (index < value.length) {
+            element.value += value.charAt(index); // Добавляем текущую букву к значению поля
+            console.log(`Вводим букву: ${value.charAt(index)}`);
 
-    } catch (error) {
-        console.error(error.message);
-    }
-}
+            // Создаем и отправляем событие 'input' для уведомления системы об изменении значения
+            const event = new Event('input', { bubbles: true });
+            element.dispatchEvent(event);
 
-
-async function Fill_email() {
-    // Ожидаем появления поля для email
-    emailInput = document.getElementById('identifierId');
-    emailInput.value = 'conellmarie961@gmail.com'; // Вводим email
-    emailInput.dispatchEvent(new Event('input', { bubbles: true }));
-
-    setTimeout(() => {
-        // Выбираем кнопку "Tālāk"
-        const nextButton = document.getElementById('identifierNext'); // Выбор по атрибуту jsname
-
-        if (nextButton) {
-            nextButton.click(); // Кликаем на кнопку "Tālāk"
+            index++; // Переходим к следующей букве
+            setTimeout(typeNextLetter, delay); // Ждем перед вводом следующей буквы
         } else {
-            console.log('Кнопка "Tālāk" не найдена.');
-        }
-    }, 1000); // Пауза в 1 секунду
-    
-    // Ждем 3 секунды перед вводом пароля
-    await new Promise(resolve => setTimeout(resolve, 3000));
+            console.log('Ввод завершён');
 
-    // Ожидаем появления поля для ввода пароля
-    const passwordInput = await waitForElement('input[type="password"]', 10000);
-    passwordInput.value = 'paravoz1k'; // Вводим пароль
-    passwordInput.dispatchEvent(new Event('input', { bubbles: true }));
-   
-   
-    // Находим кнопку "Далее" для пароля и кликаем
-   
-    const nextButton = await waitForElement('#passwordNext', 10000);
-    nextButton.click();
+            // Нажимаем Enter
+            const enterEvent = new KeyboardEvent('keydown', {
+                key: 'Enter',
+                code: 'Enter',
+                keyCode: 13,
+                charCode: 0,
+                bubbles: true
+            });
+
+            setTimeout(() => {
+                console.log("Нажимаем Enter");
+                element.dispatchEvent(enterEvent); // Отправляем событие Enter
+            }, 5000); // Задержка 5 секунд перед нажатием Enter
+        }
+    }
+
+    typeNextLetter(); // Начинаем ввод
 }
 
-// Слушаем сообщения из popup.js
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.action === 'login-google') {
-        simulateMouseClickAndLogin(); // Запускаем функцию симуляции входа через Google
-    }
-});
+// Функция для заполнения формы
+function fillForm() {
+    console.log('Заполнение формы началось...');
 
-// Слушаем сообщения из popup.js
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.action === 'login') {
-        Fill_email(); // Запускаем функцию симуляции входа через Google
+    // Поле для выбора страны (Latvia)
+    const countryField = document.querySelector('input[aria-label="select"][role="combobox"]');
+    const countryArrow = document.querySelector('.next-select-arrow'); // Стрелка для открытия выпадающего списка
+    
+    if (countryField && countryArrow) {
+        // Клик по стрелке для открытия выпадающего списка
+        countryArrow.click();
+        console.log('Стрелка для выбора страны нажата');
+
+        // Пауза 2 секунды перед вводом значения
+        setTimeout(() => {
+            smoothInput(countryField, 'Latvia', 300); // Плавный ввод с задержкой 300 мс между буквами
+        }, 2000); // Задержка 2 секунды перед вводом
+    } else {
+        console.log('Поле или стрелка для выбора страны не найдены');
     }
+}
+
+// Ждём 7 секунд для полной загрузки страницы, затем заполняем форму
+setTimeout(() => {
+    fillForm();
+}, 7000);
+
+// Обработчик события на кнопку "Начать"
+document.getElementById('start').addEventListener('click', function() {
+    chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+        chrome.scripting.executeScript({
+            target: { tabId: tabs[0].id },
+            function: fillForm
+        });
+    });
 });
