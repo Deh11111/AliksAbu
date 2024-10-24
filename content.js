@@ -13,7 +13,9 @@ async function waitForElement(selector, timeout = 100000) {
 async function simulateMouseClickAndLogin() {
     try {
         // Находим кнопку для входа через Google на AliExpress
-        const googleLoginButton = await waitForElement('a.fm-sns-new-item.google');
+        // const googleLoginButton = await waitForElement('a.fm-sns-new-item.google');
+        const googleLoginButton =  await waitForElement('a._1unVQ._2vtTC');
+        console.log(googleLoginButton);
         googleLoginButton.click(); // Симулируем клик
 
     } catch (error) {
